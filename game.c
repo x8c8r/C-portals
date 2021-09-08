@@ -1,6 +1,15 @@
+/******************************************
+*
+*   C-portals
+*
+*   Made by Fl1pNatic using raylib (www.raylib.com)
+*
+******************************************/
+
 #include "raylib.h"
 
 int main(void){
+    
     int screenWidth = 800;
     int screenHeight = 600;
     InitWindow(screenWidth, screenHeight, "C-portals");
@@ -16,29 +25,33 @@ int main(void){
     Speed does change and all the other functions use it
     Starting speed doesn't change and speed uses it as a starting value(thx cap)
     */
-    const bool debug = true; //Debug mode(not made yet)
-    const bool enableAccel = false;//Enable acceleration(Broken for the time being
+    const bool debug = true; //Debug mode(being made)
+    const bool enableAccel = true;//Enable acceleration(Broken for the time being
     const bool enableVert = true;
-    const bool enableFake = false;
+    const bool enableFake = false; //Fake portal reflections(they are yet to be implemented)
     
     
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         // Update
-        if(IsKeyDown(KEY_RIGHT) && !IsKeyPressed(KEY_LEFT)){ //Makes the circle go right
+        if(IsKeyDown(KEY_RIGHT) && !IsKeyDown(KEY_LEFT)){ //Makes the circle go right
           x = x+Speed;
           //Makes the circle accelerate if the var is true
           if(enableAccel == true){
             Speed = Speed + accelAmount; 
           }
         }
-        if(IsKeyDown(KEY_LEFT) && !IsKeyPressed(KEY_RIGHT)) { //Makes the circle go left
+        if(IsKeyDown(KEY_LEFT) && !IsKeyDown(KEY_RIGHT)) { //Makes the circle go left
           x = x-Speed;
           //Makes the circle accelerate if the var is true
           if(enableAccel == true){
             Speed = Speed + accelAmount; 
           }
         }
+        if(IsKeyDown(KEY_LEFT) && IsKeyDown(KEY_RIGHT)) { //Makes the circle stop if both of the keys are down
+          Speed = 0;
+        }
+        
         //"Portals" | Basically just teleports ball to the opposite side
         if(x >= screenWidth){
           x = 1;
@@ -68,23 +81,57 @@ int main(void){
             Speed = Speed+accelAmount; 
           }
         }
-        if(IsKeyReleased(KEY_RIGHT) && IsKeyReleased(KEY_LEFT) && IsKeyReleased(KEY_UP) && IsKeyReleased(KEY_DOWN)){
+        if(IsKeyUp(KEY_RIGHT) && IsKeyUp(KEY_LEFT) && IsKeyUp(KEY_UP) && IsKeyUp(KEY_DOWN)){
          //If all buttons are released - Speed gets set to starting speed
             Speed = startSpeed;
         }
         if(Speed > maxSpeed){//If speed exceeds max speed it gets set back to it
           Speed = maxSpeed;
         }
+        
+        
         BeginDrawing();
         
         ClearBackground(BLACK);
+        if(IsKeyPressed(KEY_F12)){
+            TakeScreenshot(1);
+        }
+        
+        if(debug == true){
+            DrawFPS(10, 20);
+            DrawText("Debug mode: On", 10, 10, 10, GREEN);
+            
+            /*DrawText("X:", 10, 4
+            0, 10, GREEN); // Crashes the game for some reason    
+            DrawText(x, 15, 40, 10, GREEN);*/
+            
+            switch(enableVert){
+            case true:
+                DrawText("Vertical movement: On", 10, 40, 10, GREEN);
+                break;
+            case false:
+                DrawText("Vertical movement: Off", 10, 40, 10, RED);
+                break;
+            }
+            
+            switch(enableAccel){
+            case true:
+                DrawText("Acceleration: On", 10, 50, 10, GREEN);
+                break;
+            case false:
+                DrawText("Acceleration: Off", 10, 50, 10, RED);
+                break;
+            }
+            
+        }
+        
         
         DrawCircle(x, y, 5, WHITE); //Draws a circle(player)
         //Draws lines to represent portals
-        DrawLine(1, screenHeight, 0, 0, BLUE);
-        DrawLine(screenWidth, screenHeight, screenWidth, 0, ORANGE);
-        DrawLine(1, screenHeight, screenWidth, screenHeight, PINK);
-        DrawLine(1, 1, screenWidth, 1, GREEN);
+        DrawLineEx((Vector2){1, screenHeight}, (Vector2){0, 0}, 3, DARKBLUE); // Left portal
+        DrawLineEx((Vector2){screenWidth, screenHeight}, (Vector2){screenWidth, 0}, 3, ORANGE); // Right portal
+        DrawLineEx((Vector2){1, screenHeight}, (Vector2){screenWidth, screenHeight}, 3, SKYBLUE); // Down portal
+        DrawLineEx((Vector2){1, 1}, (Vector2){screenWidth, 1}, 3, YELLOW); // Up portal
 
         EndDrawing();
     }
