@@ -15,7 +15,7 @@ int main(void){
     int screenWidth = 800;//Screen width
     int screenHeight = 600;//Screen height
     
-    typedef enum GameScreen { MENU = 0, GAME } GameScreen;//Current screen
+    typedef enum GameScreen { MENU = 0, GAME, SETTINGS } GameScreen;//Current screen
     
     GameScreen curScreen = MENU;
     
@@ -23,6 +23,7 @@ int main(void){
     //Starting X and Y positions of the player
     int x = screenWidth/2;
     int y = screenHeight/2;
+    int optSelect = 1;
     float startSpeed = 2.0;//Starting speed
     float accelAmount = 0.1;//If enableAccel is true this var will be used to define how fast the player should accelerate
     float Speed = startSpeed; /*Sets speed to the starting speed
@@ -46,10 +47,63 @@ int main(void){
         case MENU:    
                 if (IsKeyPressed(KEY_ENTER))
                 {
+                    SetExitKey(0);
                     curScreen = GAME;
                     break;
-                }            
+                }                            
+                if (IsKeyPressed(KEY_O))
+                {
+                    SetExitKey(0);                    
+                    curScreen = SETTINGS;
+                    break;
+                }
+        case SETTINGS:
+                if (IsKeyPressed(KEY_ESCAPE))
+                {
+                    SetExitKey(KEY_ESCAPE);
+                    curScreen = MENU;                  
+                }
+                if(IsKeyPressed(KEY_DOWN)){
+                    optSelect++;
+                }
+                if(IsKeyPressed(KEY_UP)){
+                    optSelect--;
+                }
+                if(optSelect > 4){
+                    optSelect = 4;
+                }
+                if(optSelect < 1){
+                    optSelect = 1;
+                }
+                
+                if(optSelect == 1){
+                    if(IsKeyPressed(KEY_ENTER)){
+                        enableVert = !enableVert;
+                    }
+                }
+                 if(optSelect == 2){
+                    if(IsKeyPressed(KEY_ENTER)){
+                        enableAccel = !enableAccel;
+                    }
+                }
+                 if(optSelect == 3){
+                    if(IsKeyPressed(KEY_ENTER)){
+                        enablePortals = !enablePortals;
+                    }
+                }
+                 if(optSelect == 4){
+                    if(IsKeyPressed(KEY_ENTER)){
+                        debug = !debug;
+                    }
+                }
+            break;
         case GAME:
+                if (IsKeyPressed(KEY_ESCAPE))
+                {
+                    SetExitKey(KEY_ESCAPE);
+                    curScreen = MENU;                  
+                    break;
+                }      
             //Moves
             if(IsKeyDown(KEY_RIGHT) && !IsKeyDown(KEY_LEFT)){ //Makes the player go right
               x = x+Speed;
@@ -129,10 +183,6 @@ int main(void){
             if(IsKeyPressed(KEY_F12)){
                 TakeScreenshot(1);//Takes a screenshot on F12
             }
-
-            if(IsKeyPressed(KEY_D)){//If "D" key is pressed - The debug mode will toggle
-                debug = !debug;
-            }
             break;
         }
         BeginDrawing();//Begins drawing
@@ -141,16 +191,106 @@ int main(void){
         
         switch (curScreen){
         case MENU:
-            DrawRectangle(0, 0, screenWidth, screenHeight, BLACK);
-            DrawText("C-portals", screenWidth/3, screenHeight/3, 40, WHITE);
+            DrawText("C-por", screenWidth/3, screenHeight/3, 40, BLUE); DrawText("tals", screenWidth/3+120, screenHeight/3, 40, ORANGE);
             DrawText("Press ENTER to PLAY", screenWidth/3, screenHeight/3+50, 20, WHITE); 
-            DrawText("Press ESCAPE to QUIT", screenWidth/3, screenHeight/3+75, 20, WHITE); 
+            DrawText("Press O to FOR SETTINGS", screenWidth/3, screenHeight/3+75, 20, WHITE);            
+            DrawText("Press ESCAPE to QUIT", screenWidth/3, screenHeight/3+100, 20, WHITE);
+            //Portals for aesthetics
+            DrawLineEx((Vector2){1, screenHeight}, (Vector2){0, 0}, 3, DARKBLUE); // Left portal
+            DrawLineEx((Vector2){screenWidth, screenHeight}, (Vector2){screenWidth, 0}, 3, ORANGE); // Right portal
+            DrawLineEx((Vector2){1, screenHeight}, (Vector2){screenWidth, screenHeight}, 3, SKYBLUE); // Down portal
+            DrawLineEx((Vector2){1, 1}, (Vector2){screenWidth, 1}, 3, YELLOW); // Up portal
+            break;
+        case SETTINGS:
+            DrawText("Settings", screenWidth/3, screenHeight-screenHeight+10, 40, WHITE);
+            switch(optSelect){
+                case 1:
+                    switch(enableVert){//Checks if vertical movement is on
+                    case true:
+                        DrawText("Vertical movement: On <", 10, 50, 20, GREEN);
+                        break;
+                    case false:
+                        DrawText("Vertical movement: Off <", 10, 50, 20, RED);
+                        break;
+                    }
+                    break;
+                case 2:
+                    switch(enableAccel){//Checks if acceleration is on
+                    case true:
+                        DrawText("Acceleration: On <", 10, 70, 20, GREEN);
+                        break;
+                    case false:
+                        DrawText("Acceleration: Off <", 10, 70, 20, RED);
+                        break;
+                    }
+                    break;
+                case 3:
+                    switch(enablePortals){//Checks if portals are on
+                    case true:
+                        DrawText("Portals: On <", 10, 90, 20, GREEN);
+                        break;
+                    case false:
+                        DrawText("Portals: Off <", 10, 90, 20, RED);
+                        break;
+                    } 
+                    break;
+                case 4:
+                    switch(debug){
+                    case true:
+                        DrawText("Debug mode: On <", 10, 110, 20, GREEN);
+                        break;
+                    case false:
+                        DrawText("Debug mode: Off <", 10, 110, 20, RED);
+                        break;
+                    }
+                    break;
+            }
+            switch(enableVert){//Checks if vertical movement is on
+                case true:
+                    DrawText("Vertical movement: On", 10, 50, 20, GREEN);
+                    break;
+                case false:
+                    DrawText("Vertical movement: Off", 10, 50, 20, RED);
+                    break;
+                }
+                switch(enableAccel){//Checks if acceleration is on
+                case true:
+                    DrawText("Acceleration: On", 10, 70, 20, GREEN);
+                    break;
+                case false:
+                    DrawText("Acceleration: Off", 10, 70, 20, RED);
+                    break;
+                }
+                
+                switch(enablePortals){//Checks if portals are on
+                case true:
+                    DrawText("Portals: On", 10, 90, 20, GREEN);
+                    break;
+                case false:
+                    DrawText("Portals: Off", 10, 90, 20, RED);
+                    break;
+                }            
+                switch(debug){
+                case true:
+                    DrawText("Debug mode: On", 10, 110, 20, GREEN);
+                    break;
+                case false:
+                    DrawText("Debug mode: Off", 10, 110, 20, RED);
+                    break;
+                }
+            //Same portals for aesthetics
+            DrawLineEx((Vector2){1, screenHeight}, (Vector2){0, 0}, 3, DARKBLUE); // Left portal
+            DrawLineEx((Vector2){screenWidth, screenHeight}, (Vector2){screenWidth, 0}, 3, ORANGE); // Right portal
+            DrawLineEx((Vector2){1, screenHeight}, (Vector2){screenWidth, screenHeight}, 3, SKYBLUE); // Down portal
+            DrawLineEx((Vector2){1, 1}, (Vector2){screenWidth, 1}, 3, YELLOW); // Up portal
             break;
         case GAME:
             //Debug mode
-            if(debug == true){
-                DrawFPS(10, 20);//Draws FPS
-                DrawText("Debug mode: On", 10, 10, 10, GREEN);//Draws text that says that debug mode is on
+            switch(debug){
+                case true:
+                    DrawFPS(10, 20);//Draws FPS
+                    DrawText("Debug mode: On", 10, 10, 10, GREEN);//Draws text that says that debug mode is on
+            
                 
                 /*DrawText("X:", 10, 4
                 0, 10, GREEN); // Crashes the game for some reason    
@@ -183,7 +323,7 @@ int main(void){
                     break;
                 }            
                 
-            }
+            }   
             //Draws a player(as a circle))
             DrawCircle(x, y, 5, WHITE); 
             //Draws lines to represent portals(if enabled)
