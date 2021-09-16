@@ -1,5 +1,5 @@
 # C-portals
-A C rewrite of [Arduino Portals](https://github.com/Fl1pNatic/arduino-portals) using [raylib](https://www.raylib.com/)
+A C rewrite of [Inoportals](https://github.com/Fl1pNatic/fonsole-games) using [raylib](https://www.raylib.com/)
 
 ## Warning:
 ### In this current state it needs a lot of improvements.
