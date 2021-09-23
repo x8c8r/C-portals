@@ -1,3 +1,6 @@
+## Archived
+Moved to https://github.com/Fl1pNatic/portals for the sake of less repos
+
 # C-portals
 A C rewrite of [Inoportals](https://github.com/Fl1pNatic/fonsole-games) using [raylib](https://www.raylib.com/)
 
